@@ -1,0 +1,191 @@
+﻿#001 ####################### console app erstellen
+
+#002 ####################### web sdk im projekt aktivieren
+
+Microsoft.NET.Sdk.Web
+
+Raus:    <OutputType>Exe</OutputType>
+
+
+#003 ####################### asp.net hinzufügen
+
+Microsoft.AspNetCore.App
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-preview1-final" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.1.0-preview1-final" />
+  </ItemGroup>
+
+#004 ####################### Program
+
+class Program
+{
+	static void Main(string[] args)
+	{
+		Console.WriteLine("Hello World!");
+
+		WebHost.CreateDefaultBuilder(args)
+			.UseStartup<Startup>()
+			.Build()
+			.Run();
+	}
+}
+
+#005 ####################### Startup
+
+public class Startup
+{
+	public void ConfigureServices(IServiceCollection services)
+	{
+
+	}
+
+	public void Configure(IApplicationBuilder app)
+	{
+		
+	}
+}
+
+
+
+
+
+app.Use(async (context, next) =>
+{
+	await context.Response.WriteAsync("<p>Start</p>");
+	await next();
+	await context.Response.WriteAsync("<p>Ende</p>");
+});
+
+app.Run(async context =>
+{
+	await context.Response.WriteAsync("<p><strong>Hallo Welt!</strong></p>");
+});
+
+#006 ####################### Services
+
+
+services.AddMvc()
+	.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+
+#007 ####################### Configure
+
+if (env.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");    
+}
+
+app.UseStaticFiles();
+
+app.UseMvc(routes =>
+{
+    routes.MapRoute(
+        name: "default",
+        template: "{controller=Home}/{action=Index}/{id?}");
+});
+
+#008 ####################### Add Static file
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>title</title>
+  </head>
+  <body>
+    <!-- page content -->
+  </body>
+</html>
+
+#009 ####################### Move static file to wwwroot
+
+#010 ####################### Create Controller, Views, Model
+
+namespace FrankenWeb.Controllers
+{
+    public class HomeController : Controller
+    {
+        
+    }
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>title</title>
+  </head>
+  <body>
+    <!-- page content -->
+  </body>
+</html>
+
+
+ViewData["Title"] = "Start Page";
+ViewData["Message"] = "Your application description page.";
+
+namespace FrankenWeb.ViewModels
+{
+    public class IndexViewModel
+    {
+        public string Title { get; set; }
+        public string Message { get; internal set; }
+    }
+}
+
+
+#011 ####################### _Layout.cshtml
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>@ViewData["Title"]</title>
+  </head>
+  <body>
+    @RenderBody()
+  </body>
+</html>
+
+
+#012 ####################### _ViewStart.cshtml
+
+@{
+    Layout = "_Layout";
+}
+
+
+#013 ####################### _ViewImports.cshtml
+
+@using FrankenWeb
+@using FrankenWeb.ViewModels
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+#020 ####################### add https
+
+app.UseHsts();
+
+app.UseHttpsRedirection();
+
+app.UseCookiePolicy();
+
+.UseKestrel(options => 
+{
+    options.Listen(IPAddress.Loopback, 5000);
+    options.Listen(IPAddress.Loopback, 5001, listenOptions =>
+    {
+        listenOptions.UseHttps("certificate.pfx", "topsecret");
+    });
+})
+
